@@ -109,3 +109,36 @@ Menggambarkan perubahan struktur widget dalam aplikasi Flutter setelah dilakukan
   - Column:
     - Expanded → ListView (menampilkan daftar rencana)
     - SafeArea → Text (menampilkan informasi tambahan, terhindar dari notch/status bar)
+
+## widget _buildMasterPlans()
+    Widget _buildMasterPlans() {
+      ValueNotifier<List<Plan>> planNotifier = PlanProvider.of(context);
+        List<Plan> plans = planNotifier.value;
+    
+        if (plans.isEmpty) {
+          return Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: <Widget>[
+               const Icon(Icons.note, size: 100, color: Colors.grey),
+               Text('Anda belum memiliki rencana apapun.',
+                  style: Theme.of(context).textTheme.headlineSmall)
+             ]);
+        }
+        return ListView.builder(
+            itemCount: plans.length,
+            itemBuilder: (context, index) {
+              final plan = plans[index];
+              return ListTile(
+                  title: Text(plan.name),
+                  subtitle: Text(plan.completenessMessage),
+                  onTap: () {
+                    Navigator.of(context).push(
+                       MaterialPageRoute(builder: (_) =>
+    PlanScreen(plan: plan,)));
+                  });
+            });
+    }
+
+### Penjelasan
+Fungsi ini pertama-tama mengambil daftar rencana dari ValueNotifier yang ada di PlanProvider. Kalau daftar rencana masih kosong, tampilan yang muncul adalah ikon besar dengan teks yang ngasih tahu bahwa belum ada rencana yang dibuat. Tapi kalau udah ada rencana, maka akan ditampilkan dalam bentuk daftar (ListView), di mana setiap itemnya berupa ListTile yang menampilkan nama rencana dan statusnya. Jika pengguna mengklik salah satu rencana, aplikasi akan membuka halaman detail rencana di PlanScreen.
+
